@@ -1,6 +1,7 @@
 import pygame
 import random
 import sys
+import time
 
 def get_index(i,j):
 	if i<0 or j<0 or i>cols-1 or j>rows-1:
@@ -32,7 +33,7 @@ class Cell(object):
 		self.size=size
 		self.x=self.i*self.size
 		self.y=self.j*self.size
-		self.color=(255,0,255)
+		self.color=(155, 18, 125)
 		#			top  right bottom left
 		self.walls=[True,True,True,True]
 		self.visited=False
@@ -100,13 +101,13 @@ class Cell(object):
 			return
 
 		if self.walls[0]:
-			pygame.draw.line(display,self.color,(x0,y0),(x1,y0),2)
+			pygame.draw.line(display,self.color,(x0,y0),(x1,y0),1)
 		if self.walls[1]:
-			pygame.draw.line(display,self.color,(x1,y0),(x1,y1),2)
+			pygame.draw.line(display,self.color,(x1,y0),(x1,y1),1)
 		if self.walls[2]:
-			pygame.draw.line(display,self.color,(x1,y1),(x0,y1),2)
+			pygame.draw.line(display,self.color,(x1,y1),(x0,y1),1)
 		if self.walls[3]:
-			pygame.draw.line(display,self.color,(x0,y1),(x0,y0),2)
+			pygame.draw.line(display,self.color,(x0,y1),(x0,y0),1)
 
 
 
@@ -115,7 +116,9 @@ if __name__=="__main__":
 	print('\n#######Hello from Maze-Generator#####\n')
 	cols=int(input('enter number of cols:'))
 	rows=int(input('enter number of rows:'))
-	size=15
+	size=10
+	finished=False
+	time_start=time.time()
 	width=cols*size
 	height=rows*size
 	grid=[]
@@ -132,6 +135,8 @@ if __name__=="__main__":
 	current=grid[0]
 	while 1:
 		# clock.tick(60)
+		if not finished:
+			print('time elapsed:%s'%(time.time()-time_start))
 		for event in pygame.event.get():
 			if event.type==pygame.QUIT:
 				pygame.quit()
@@ -151,6 +156,9 @@ if __name__=="__main__":
 
 		elif len(stack)>0:
 			current=stack.pop()
+		else:
+			finished=True
+			# print('finished')
 
 		pygame.display.update()
 				
