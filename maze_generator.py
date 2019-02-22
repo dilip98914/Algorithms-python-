@@ -109,6 +109,8 @@ class Cell(object):
 
 		if self.visited:
 			pygame.draw.rect(display,(255,0,0),pygame.Rect(self.x,self.y,size,size))
+		else:
+			return
 
 		if self.walls[0]:
 			pygame.draw.line(display,self.color,(x0,y0),(x1,y0),2)
@@ -124,7 +126,7 @@ if __name__=="__main__":
 	pygame.init()
 	screen=pygame.display.set_mode((width,height))
 	pygame.display.set_caption('Maze-Generator')
-	clock=pygame.time.Clock()
+	# clock=pygame.time.Clock()
 
 
 
@@ -134,7 +136,7 @@ if __name__=="__main__":
 
 	current=grid[0]
 	while 1:
-		clock.tick(60)
+		# clock.tick(60)
 		for event in pygame.event.get():
 			if event.type==pygame.QUIT:
 				pygame.quit()
