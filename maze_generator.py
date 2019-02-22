@@ -2,16 +2,6 @@ import pygame
 import random
 import sys
 
-
-grid=[]
-stack=[]
-current=None
-width=500
-height=500
-size=15
-cols=width//size
-rows=height//size
-
 def get_index(i,j):
 	if i<0 or j<0 or i>cols-1 or j>rows-1:
 		return -1
@@ -33,9 +23,6 @@ def remove_walls(a,b):
 	elif y==-1:
 		a.walls[2]=False
 		b.walls[0]=False
-
-
-
 
 
 class Cell(object):
@@ -83,13 +70,13 @@ class Cell(object):
 			if not bottom.visited:
 				neighbours.append(bottom)
 
-		print("neightbors: "+str(len(neighbours)))		
+		# print("neightbors: "+str(len(neighbours)))		
 		if len(neighbours)>0:
 			nei_index=random.randint(0,len(neighbours)-1)	
-			print('index:'+str(nei_index))
+			# print('index:'+str(nei_index))
 			return neighbours[nei_index]
 		else:
-			print('neighbour is undefined!!')
+			# print('neighbour is undefined!!')
 			return None
 
 
@@ -108,7 +95,7 @@ class Cell(object):
 		y1=y0+self.size
 
 		if self.visited:
-			pygame.draw.rect(display,(255,0,0),pygame.Rect(self.x,self.y,size,size))
+			pygame.draw.rect(display,(255,255,255),pygame.Rect(self.x,self.y,size,size))
 		else:
 			return
 
@@ -122,16 +109,24 @@ class Cell(object):
 			pygame.draw.line(display,self.color,(x0,y1),(x0,y0),2)
 
 
+
 if __name__=="__main__":
+	# clock=pygame.time.Clock()
+	print('\n#######Hello from Maze-Generator#####\n')
+	cols=int(input('enter number of cols:'))
+	rows=int(input('enter number of rows:'))
+	size=15
+	width=cols*size
+	height=rows*size
+	grid=[]
+	stack=[]
+	current=None
 	pygame.init()
 	screen=pygame.display.set_mode((width,height))
 	pygame.display.set_caption('Maze-Generator')
-	# clock=pygame.time.Clock()
 
-
-
-	for y in range(height//size):
-		for x in range(width//size):
+	for y in range(rows):
+		for x in range(cols):
 			grid.append(Cell(x,y,size))
 
 	current=grid[0]
@@ -151,18 +146,11 @@ if __name__=="__main__":
 		if next is not None:
 			next.visited=True
 			stack.append(current)
-
-
 			remove_walls(current,next)
-
-
 			current=next
 
 		elif len(stack)>0:
 			current=stack.pop()
 
-			# print('no more left neighbours')
-			# pygame.time.wait(2000)
-			# break
 		pygame.display.update()
 				
