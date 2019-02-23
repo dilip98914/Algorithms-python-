@@ -1,2 +1,11 @@
-Recursive backtracker
-*The depth-first search algorithm of maze generation implemented using backtracking.
+# Some Algorithms
+
+
+
+```
+**Implemented in python**
+
+```
+1. Maze Generator
+2. Astar Pathfinding
+
