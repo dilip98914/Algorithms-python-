@@ -5,13 +5,13 @@ import random
 import math
 import threading
 
-
 class Astar(object):
-	def __init__(self,grid):
+	def __init__(self,grid,start,end):
 		self.cols=len(grid[0])
 		self.rows=len(grid)
-		self.start=grid[0][0]
-		self.end=grid[self.rows-1][self.cols-1]
+		self.start=grid [ start[0] ] [ start[1] ]
+		self.end=grid [ end[0] ] [ end[1] ]
+
 		""" nodes that already evaluated """ 
 		self.closedSet=[]
 		"""needs to be evaluated ,intially will contain only start node"""
@@ -22,15 +22,9 @@ class Astar(object):
 		self.start.f_score=self.start.h_score+self.start.g_score
 		self.openSet.append(self.start)
 
-	def do_show(self,display):
-		for x in self.openSet:
-			x.show(display,color=(255,0,0))
-		for y in self.closedSet:
-			y.show(display,color=(0,255,0))
-
 
 	def do_perform(self):
-		while len(self.openSet)>0:
+		if len(self.openSet)>0:
 			
 			# calulate lowest f_score
 			current=self.openSet[0]
@@ -39,7 +33,6 @@ class Astar(object):
 					current=elt
 			# check if it reached to the end
 			if current==self.end:
-				print('ended')
 				return
 			# means finished being evaluated
 			self.openSet.remove(current)
@@ -72,9 +65,9 @@ class Node(object):
 		self.x=self.i*self.size
 		self.y=self.j*self.size
 		# cost of getting from start node to this node
-		self.g_score=999999
-		self.h_score=999999
-		self.f_score=self.g_score+self.h_score
+		self.g_score=0
+		self.h_score=0
+		self.f_score=0
 		self.neighbours=[]
 
 
@@ -117,8 +110,11 @@ class Node(object):
 		dj=end.j-self.j
 		return math.sqrt(di**2+dj**2)		
 
-	def show(self,display,color=(255,255,255)):
-		pygame.draw.rect(display,color,pygame.Rect(self.x,self.y,self.size,self.size))
+	def show(self,display,color=(255,255,255),border_flag=0):
+		if border_flag==0:
+			pygame.draw.rect(display,color,pygame.Rect(self.x,self.y,self.size,self.size))
+		else:
+			pygame.draw.rect(display,color,pygame.Rect(self.x,self.y,self.size,self.size),2)
 
 
 class Main(object):
@@ -126,7 +122,7 @@ class Main(object):
 		pygame.init()
 		self.width=500
 		self.height=500
-		self.size=10
+		self.size=20
 		self.screen=pygame.display.set_mode((self.width,self.height))
 		pygame.display.set_caption('ASTAR')
 		self.cols=self.width//self.size
@@ -134,7 +130,28 @@ class Main(object):
 		# grid space to experiment
 		self.grid=self.get_grid()
 		self.add_all_neighbours()
-		self.algo=Astar(self.grid)
+		self.algo=Astar(self.grid,(0,0),(self.cols-1,self.rows-1))
+		self.usr_logs()
+
+
+	def change_end(self):
+		self.pos=pygame.mouse.get_pos()
+		x=self.pos[0]//self.size
+		y=self.pos[1]//self.size
+		pos=(x,y)
+		print(pos)
+		if pygame.mouse.get_pressed()[0]:
+			# print('closked')
+			self.algo=Astar(self.grid,(0,0),(y,x))
+
+		# print(pos)
+
+	def usr_logs(self):
+		print("###### Welcome To Astar Algorithm#######")
+		print('openSet:-Red')
+		print('starting and ending:-White')
+		print('closedSet:-kinda_blue')
+		print('total nodes to evaluate:%d' %(len(self.grid)*len(self.grid[0])))
 
 
 	def get_grid(self):
@@ -148,7 +165,17 @@ class Main(object):
 	def draw_grid(self,display):
 		for y in range(self.rows):
 			for x in range(self.cols):
-				self.grid[y][x].show(display)
+				spot=self.grid[y][x]
+				if spot in self.algo.closedSet:
+					spot.show(display,color=(12,122,155))
+				if spot in self.algo.openSet:
+					spot.show(display,color=(255,0,0))
+				if spot==self.algo.start or  spot==self.algo.end:
+					spot.show(display,color=(255,255,255))
+		for y in range(self.rows):
+			for x in range(self.cols):
+				self.grid[y][x].show(display,color=(0,0,0),border_flag=1)
+
 	
 	def loop(self):
 		while 1:
@@ -157,12 +184,12 @@ class Main(object):
 					pygame.quit()
 					sys.exit()
 
-			# t=threading.Thread(target=)
-			# t.start()
-			# self.screen.fill((0,0,0))
 			self.algo.do_perform()
-			self.draw_grid(self.screen)
-			self.algo.do_show(self.screen)
+			self.change_end()
+			self.screen.fill((0,0,0))
+			th=threading.Thread(target=self.draw_grid(self.screen))
+			th.start()
+			# self.draw_grid(self.screen)
 			pygame.display.update()
 
 
